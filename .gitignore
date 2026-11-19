@@ -1,0 +1,7 @@
+# build outputs
+paper/REPORT.pdf
+paper/REPORT.tex
+paper/REPORT.html
+paper/figures/_contact-sheet.png
+__pycache__/
+.DS_Store

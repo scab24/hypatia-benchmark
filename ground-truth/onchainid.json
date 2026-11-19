@@ -1,0 +1,440 @@
+{
+  "project": "onchainid",
+  "repo": "https://github.com/T-REX-Network/ONCHAINID",
+  "audited_commit": "d2096509e3bed2589fff36f6f673498f47e23d73",
+  "audited_commit_date": "2026-07-24",
+  "fixed_commit": "4fda2052a8e97c98479253d70b6b32d32d647e9a",
+  "fixed_commit_date": "2026-08-31",
+  "report": {
+    "firm": "OpenZeppelin",
+    "url": "https://www.openzeppelin.com/news/onchainid-audit",
+    "audit_window": "2026-07-27 to 2026-08-07",
+    "totals": {
+      "critical": 1,
+      "high": 2,
+      "medium": 9,
+      "low": 20,
+      "notes": 7
+    }
+  },
+  "size": {
+    "files_in_scope": 28,
+    "lines_no_comments_no_blanks": 2058
+  },
+  "baseline": {
+    "toolchain": "forge 1.9.0, solc 0.8.30, evm cancun, dependencies via soldeer",
+    "tests_at_audited_commit": "320 total, 318 pass, 2 fail",
+    "tests_at_fixed_commit": "445 total, 443 pass, 2 fail",
+    "known_failing_tests": [
+      "test_preventCreatingBeaconWithZeroImplementation",
+      "test_revertBecauseBeaconIsZeroAddress"
+    ],
+    "note": "The two failures exist at both commits and compare revert bytes with extra padding; cause not investigated."
+  },
+  "notes": [
+    "Fix pull requests were squash-merged: the report cites the pull-request commit, the fixed version contains the squash commit listed as fix_commit.",
+    "H-01 and H-02 were fixed in the same pull request (#41).",
+    "M-07 is acknowledged, not resolved: it cannot be judged by a vulnerable/fixed difference.",
+    "M-08 has no resolution note in the report (the report counts 7 of 9 Medium as resolved), yet the repository has a commit for it that is contained in the fixed version. Status to confirm by reading the diff.",
+    "The field `judgeable` is not filled in yet: it needs a reading of each finding to decide whether a test can show the harm.",
+    "Low and Note findings were added on 2026-11-17 from the report's section order (L-01..L-20, N-01..N-07) and from the finding id in the subject of each squash commit; they are used to match valid reports of lower severity, not for the headline counts."
+  ],
+  "findings": [
+    {
+      "id": "C-01",
+      "severity": "Critical",
+      "title": "Validator and Account Resolve the Same Batch Calldata to Different Targets",
+      "files": [
+        "contracts/KeyManager.sol",
+        "contracts/SmartAccount.sol",
+        "contracts/modules/validators/ERC734Validator.sol"
+      ],
+      "status": "resolved",
+      "report_fix": "eadb9f7 (PR 39)",
+      "fix_commit": "4b5a5bf"
+    },
+    {
+      "id": "H-01",
+      "severity": "High",
+      "title": "Queued Approval Omits the Factory Guard That Auto-Approval Enforces",
+      "files": [
+        "contracts/SmartAccount.sol",
+        "contracts/factory/IdentityFactory.sol",
+        "contracts/modules/executors/KeyApprovalModule.sol",
+        "contracts/modules/validators/ERC734Validator.sol"
+      ],
+      "status": "resolved",
+      "report_fix": "16101bc (PR 41)",
+      "fix_commit": "b73ae64"
+    },
+    {
+      "id": "H-02",
+      "severity": "High",
+      "title": "Key Registry Not Recognized as a Privileged Call Target",
+      "files": [
+        "contracts/Identity.sol",
+        "contracts/SmartAccount.sol",
+        "contracts/modules/executors/KeyApprovalModule.sol",
+        "contracts/modules/validators/ERC734Validator.sol"
+      ],
+      "status": "resolved",
+      "report_fix": "e8f1e79 (PR 41)",
+      "fix_commit": "b73ae64"
+    },
+    {
+      "id": "M-01",
+      "severity": "Medium",
+      "title": "Last-Manager Guard Counts Module Keys That Cannot Sign",
+      "files": [
+        "contracts/Identity.sol",
+        "contracts/factory/IdentityFactory.sol",
+        "contracts/modules/validators/ERC734Validator.sol"
+      ],
+      "status": "resolved",
+      "report_fix": "84cd5fd (PR 44)",
+      "fix_commit": "341b762"
+    },
+    {
+      "id": "M-02",
+      "severity": "Medium",
+      "title": "Cross-Identity Claim Writes Are Authorized Against the Validator Singleton Instead of the Issuer",
+      "files": [
+        "contracts/Identity.sol",
+        "contracts/modules/validators/ERC734Validator.sol"
+      ],
+      "status": "resolved",
+      "report_fix": "5e04575 (PR 45)",
+      "fix_commit": "af4afc9"
+    },
+    {
+      "id": "M-03",
+      "severity": "Medium",
+      "title": "Installed Executors Cannot Be Reached by the Account, Leaving Their Self-Gated Functions Unreachable",
+      "files": [
+        "contracts/SmartAccount.sol",
+        "contracts/modules/executors/RecoveryModule.sol"
+      ],
+      "status": "resolved",
+      "report_fix": "6d4814b (PR 46)",
+      "fix_commit": "02d61ad"
+    },
+    {
+      "id": "M-04",
+      "severity": "Medium",
+      "title": "The Factory's Post-Deployment Key Check Is Answered by a Caller-Supplied Fallback Handler",
+      "files": [
+        "contracts/Identity.sol",
+        "contracts/factory/IdentityFactory.sol",
+        "contracts/modules/claims/EASClaimIssuer.sol",
+        "contracts/modules/validators/ERC734Validator.sol",
+        "contracts/reputation/ReputationRegistry.sol"
+      ],
+      "status": "resolved",
+      "report_fix": "248e116 (PR 47)",
+      "fix_commit": "b8bc555"
+    },
+    {
+      "id": "M-05",
+      "severity": "Medium",
+      "title": "Non-Canonical ERC-7930 Envelopes Give One Wallet Multiple Registry Keys",
+      "files": [
+        "contracts/factory/IIdentityFactory.sol",
+        "contracts/factory/IdentityFactory.sol"
+      ],
+      "status": "resolved",
+      "report_fix": "dced9d4 (PR 48)",
+      "fix_commit": "fd061ac"
+    },
+    {
+      "id": "M-06",
+      "severity": "Medium",
+      "title": "Signature-Based Linking Does Not Constrain the Envelope's Chain Type or Reference",
+      "files": [
+        "contracts/factory/IIdentityFactory.sol",
+        "contracts/factory/IdentityFactory.sol"
+      ],
+      "status": "resolved",
+      "report_fix": "0587147 (PR 49)",
+      "fix_commit": "70b1f86"
+    },
+    {
+      "id": "M-07",
+      "severity": "Medium",
+      "title": "Claim Digests and Revocation Records Are Recomputed From the Issuer's Live EIP-712 Domain",
+      "files": [
+        "contracts/Identity.sol",
+        "contracts/modules/validators/ERC734Validator.sol"
+      ],
+      "status": "acknowledged",
+      "report_fix": null,
+      "fix_commit": null
+    },
+    {
+      "id": "M-08",
+      "severity": "Medium",
+      "title": "Cross-Chain Link Confirmation Skips the Validations the Local Path Enforces",
+      "files": [
+        "contracts/factory/IdentityFactory.sol"
+      ],
+      "status": "unclear",
+      "report_fix": null,
+      "fix_commit": "9535ef9"
+    },
+    {
+      "id": "M-09",
+      "severity": "Medium",
+      "title": "createIdentityFor Binds a Wallet Without Proof of Control and Does Not Tie Management to the Account",
+      "files": [
+        "contracts/Identity.sol",
+        "contracts/factory/IdentityFactory.sol",
+        "contracts/modules/claims/EASClaimIssuer.sol"
+      ],
+      "status": "resolved",
+      "report_fix": "9a0a011 (PR 52)",
+      "fix_commit": "b8b41b5"
+    },
+    {
+      "id": "L-01",
+      "severity": "Low",
+      "title": "Claim Path and Key Path Use Different Definitions of a Valid Signature",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "f739e0e"
+    },
+    {
+      "id": "L-02",
+      "severity": "Low",
+      "title": "Introspection Reports Static Support Rather Than Live Module Wiring",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "739c4a8"
+    },
+    {
+      "id": "L-03",
+      "severity": "Low",
+      "title": "Unbounded Dynamic Fields in the Key and Claim Registry",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "4d1c767"
+    },
+    {
+      "id": "L-04",
+      "severity": "Low",
+      "title": "scheme and uri Are Not Covered by the Claim Signature",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "4fda205"
+    },
+    {
+      "id": "L-05",
+      "severity": "Low",
+      "title": "Claim Events Carry No Subject and the Declared ERC-734 Events Are Never Emitted",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "63e2eaf"
+    },
+    {
+      "id": "L-06",
+      "severity": "Low",
+      "title": "Uninstalling One Fallback Selector Strips All of the Module's Purposes",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "a7db220"
+    },
+    {
+      "id": "L-07",
+      "severity": "Low",
+      "title": "Re-Added Claim Cannot Be Removed a Second Time",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "d3e4921"
+    },
+    {
+      "id": "L-08",
+      "severity": "Low",
+      "title": "Claims From Issuers Without an EIP-712 Domain Cannot Be Removed",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "4281686"
+    },
+    {
+      "id": "L-09",
+      "severity": "Low",
+      "title": "Initialization Discards KeyParam.keyHash While the Deploy Salt Commits to It",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "02b0faa"
+    },
+    {
+      "id": "L-10",
+      "severity": "Low",
+      "title": "EASClaimIssuer Resolves Attestations as Valid for the Zero Identity",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "c9ff059"
+    },
+    {
+      "id": "L-11",
+      "severity": "Low",
+      "title": "The CREATE3 Deploy Salt Does Not Bind the Account That Is Auto-Linked",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "d2df384"
+    },
+    {
+      "id": "L-12",
+      "severity": "Low",
+      "title": "ERC-2771 Caller Recovery Mis-Attributes Every Call That Does Not Reach the Identity Directly",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "214940f"
+    },
+    {
+      "id": "L-13",
+      "severity": "Low",
+      "title": "Queued Executions Carry No Proposer or Expiry and Survive Key Revocation",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "1f106cd"
+    },
+    {
+      "id": "L-14",
+      "severity": "Low",
+      "title": "A Failed Dispatch Is Recorded as Approved and Executed and Cannot Be Retried",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "1d27042"
+    },
+    {
+      "id": "L-15",
+      "severity": "Low",
+      "title": "The EAS Adapter's Attester Allowlist Is Global Rather Than Scoped Per Topic",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "b5b9cfb"
+    },
+    {
+      "id": "L-16",
+      "severity": "Low",
+      "title": "Expired pendingLinks Entries Are Undeletable and Accumulate Permanently",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "958d870"
+    },
+    {
+      "id": "L-17",
+      "severity": "Low",
+      "title": "EAS Claim Validation Does Not Bind the Stored ClaimData",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "0230607"
+    },
+    {
+      "id": "L-18",
+      "severity": "Low",
+      "title": "upgradeBeacon Rebinds the Key Registry of Every Identity Without Validation or Delay",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "4ac356b"
+    },
+    {
+      "id": "L-19",
+      "severity": "Low",
+      "title": "Utilities Proxy Accepts Non-Initializing Constructor Data",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "3ff1b07"
+    },
+    {
+      "id": "L-20",
+      "severity": "Low",
+      "title": "Executors That Need a Self-Targeted Call Hold Authority Over Every Target",
+      "files": [],
+      "status": "unclear",
+      "report_fix": null,
+      "fix_commit": null
+    },
+    {
+      "id": "N-01",
+      "severity": "Note",
+      "title": "Documentation Improvement Suggestions",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "64b60ff"
+    },
+    {
+      "id": "N-02",
+      "severity": "Note",
+      "title": "Immutable Beacon Address Assumes Canonical CREATE3 and Bricks the Factory on Non-Canonical Chains",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "601d2a0"
+    },
+    {
+      "id": "N-03",
+      "severity": "Note",
+      "title": "Gateway Allowlist Ignores the Origin Chain Encoded in the ERC-7930 Sender",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "c8c5917"
+    },
+    {
+      "id": "N-04",
+      "severity": "Note",
+      "title": "Factory Notes: Admin-Role Sentinel Collision, Unbounded Getter, Unannotated Assembly, and Last-Wallet Revocation",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "0fa49b7"
+    },
+    {
+      "id": "N-05",
+      "severity": "Note",
+      "title": "EAS Attestations Remain Valid at block.timestamp == expirationTime",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "0019eb8"
+    },
+    {
+      "id": "N-06",
+      "severity": "Note",
+      "title": "Version and EIP-712 Domain Strings Are Hard-Coded in Four Places",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "13ea714"
+    },
+    {
+      "id": "N-07",
+      "severity": "Note",
+      "title": "createIdentityFor Does Not Honour AccessManager Execution Delays",
+      "files": [],
+      "status": "resolved",
+      "report_fix": null,
+      "fix_commit": "882798c"
+    }
+  ]
+}

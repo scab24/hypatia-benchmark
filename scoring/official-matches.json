@@ -1,0 +1,220 @@
+{
+ "note": "Official findings matched by each approach in each run. strict: the report states the official root cause as its own subject and shows it. lenient: the root cause is stated in passing, or the scenario is reproduced under another cause. Matches come from a test-based judge where a fixed version exists and from reading by a model elsewhere.",
+ "onchainid": {
+  "official": "1 Critical, 2 High, 9 Medium, 20 Low, 7 Notes",
+  "strict": {
+   "A, plain model": {
+    "run 1": [
+     "H-01",
+     "H-02",
+     "M-09",
+     "L-11"
+    ],
+    "run 2": [
+     "H-01",
+     "H-02",
+     "M-09",
+     "L-08"
+    ],
+    "run 3": [
+     "H-01",
+     "H-02",
+     "M-02",
+     "M-09",
+     "L-11"
+    ]
+   },
+   "B, Hypatia": {
+    "run 1": [
+     "H-01",
+     "H-02",
+     "M-01",
+     "M-02",
+     "L-08",
+     "L-11",
+     "L-17"
+    ],
+    "run 2": [
+     "H-01",
+     "H-02",
+     "M-01",
+     "M-02",
+     "M-08",
+     "M-09",
+     "L-06",
+     "L-11",
+     "L-12"
+    ],
+    "run 3": [
+     "H-01",
+     "H-02",
+     "M-02",
+     "M-08",
+     "M-09",
+     "L-06",
+     "L-08",
+     "L-11"
+    ]
+   },
+   "C, Hypatia with code map": {
+    "run 1": [
+     "H-01",
+     "H-02",
+     "M-02",
+     "M-08",
+     "M-09",
+     "L-04",
+     "L-06",
+     "L-07",
+     "L-08",
+     "L-10",
+     "L-11",
+     "L-12",
+     "N-07"
+    ],
+    "run 2": [
+     "H-01",
+     "H-02",
+     "M-02",
+     "M-08",
+     "L-06",
+     "L-08",
+     "L-11",
+     "L-17"
+    ],
+    "run 3": [
+     "H-01",
+     "H-02",
+     "M-01",
+     "M-02",
+     "M-08",
+     "M-09",
+     "L-06",
+     "L-08",
+     "L-11",
+     "L-12",
+     "N-07"
+    ]
+   }
+  }
+ },
+ "gte": {
+  "official": "10 High, 25 Medium",
+  "first round": {
+   "A, plain model": {
+    "strict": [
+     "H-01",
+     "H-04",
+     "H-06",
+     "H-07",
+     "H-08",
+     "H-09",
+     "M-12",
+     "M-17"
+    ],
+    "lenient_only": [
+     "H-05",
+     "M-18"
+    ]
+   },
+   "B, Hypatia": {
+    "strict": [
+     "H-01",
+     "H-04",
+     "H-06",
+     "H-07",
+     "H-09",
+     "M-04",
+     "M-12",
+     "M-15",
+     "M-16",
+     "M-17"
+    ],
+    "lenient_only": [
+     "H-03",
+     "H-05",
+     "H-08",
+     "M-01"
+    ]
+   },
+   "C, Hypatia with code map": {
+    "strict": [
+     "H-01",
+     "H-03",
+     "H-04",
+     "H-05",
+     "H-06",
+     "H-07",
+     "H-08",
+     "M-02",
+     "M-04",
+     "M-12",
+     "M-15",
+     "M-16",
+     "M-17",
+     "M-19",
+     "M-23"
+    ],
+    "lenient_only": [
+     "H-09",
+     "M-01",
+     "M-18",
+     "M-20"
+    ]
+   }
+  },
+  "second round, new official findings": {
+   "A, plain model": {
+    "strict": []
+   },
+   "B, Hypatia": {
+    "strict": []
+   },
+   "C, Hypatia with code map": {
+    "strict": [
+     "H-02",
+     "M-13"
+    ]
+   }
+  },
+  "second round with corrected Hypatia, new official findings": {
+   "B, Hypatia": {
+    "strict": []
+   },
+   "C, Hypatia with code map": {
+    "strict": [
+     "M-09",
+     "M-13",
+     "M-25"
+    ],
+    "lenient_only": [
+     "H-10"
+    ]
+   }
+  }
+ },
+ "promis": {
+  "official": "5 High, 5 Medium (4 inside the audited files), 14 Low, 1 Gas, 9 Informational",
+  "strict": {
+   "A, plain model": [
+    "H-05",
+    "M-03",
+    "L-13"
+   ],
+   "B, Hypatia": [
+    "H-04",
+    "H-05",
+    "L-12"
+   ],
+   "C, Hypatia with code map": [
+    "H-02",
+    "H-04",
+    "H-05",
+    "M-03",
+    "L-11",
+    "L-12",
+    "L-13"
+   ]
+  }
+ }
+}

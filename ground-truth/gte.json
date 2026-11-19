@@ -1,0 +1,368 @@
+{
+  "project": "gte",
+  "repo": "https://github.com/code-423n4/2025-08-gte-perps",
+  "audited_commit": "f43e1ee",
+  "audited_commit_note": "contest-time HEAD (2025-08-31); later commits only add a Discord export",
+  "fixed_commit": null,
+  "report": {
+    "platform": "Code4rena",
+    "url": "https://code4rena.com/reports/2025-08-gte-perps-and-launchpad",
+    "contest_ended": "2025-09-25",
+    "report_date": "2026-02-05",
+    "totals": {
+      "high": 10,
+      "medium": 25
+    }
+  },
+  "size": {
+    "files_in_scope": 33,
+    "nsloc_contest": 5260,
+    "lines_no_comments_no_blanks": 6290
+  },
+  "baseline": {
+    "toolchain": "forge 1.9.0, solc 0.8.27, evm cancun",
+    "tests_at_audited_commit": "597 total, 580 pass, 17 fail (test/live-tests need RPC_TESTNET)"
+  },
+  "notes": [
+    "No fixed version is public: the judge can only check that a test shows the harm on the contest commit; matching to this list is by reading.",
+    "Findings are numbered across both components as in the report: H-01, H-02, M-01..M-15 are Perps; H-03..H-10, M-16..M-25 are Launchpad.",
+    "M-22 has a different heading format in the report and was added separately; its file list comes from the file names in its section, like the others."
+  ],
+  "findings": [
+    {
+      "id": "H-01",
+      "severity": "High",
+      "component": "Perps",
+      "title": "Risk of Gas DoS due to Looping",
+      "files": [
+        "GTL.sol"
+      ]
+    },
+    {
+      "id": "H-02",
+      "severity": "High",
+      "component": "Perps",
+      "title": "Backstop bid-side frozen by tick-size constraint",
+      "files": [
+        "Book.sol",
+        "CLOBLib.sol",
+        "Market.sol"
+      ]
+    },
+    {
+      "id": "H-03",
+      "severity": "High",
+      "component": "Launchpad",
+      "title": "GTELaunchpadV2Pair::burn over-estimates distribution amounts when there are non-zero accrued launchpad fees",
+      "files": [
+        "GTELaunchpadV2Pair.sol"
+      ]
+    },
+    {
+      "id": "H-04",
+      "severity": "High",
+      "component": "Launchpad",
+      "title": "Attacker can drain funds from GTELaunchPadV2Pair using swap",
+      "files": [
+        "GTELaunchPadV2Pair.sol",
+        "GTELaunchpadV2Pair.sol"
+      ]
+    },
+    {
+      "id": "H-05",
+      "severity": "High",
+      "component": "Launchpad",
+      "title": "GTELaunchpadV2Pair permits minting LP tokens for free when there are non-zero accumulated launch pad fees",
+      "files": [
+        "GTELaunchpadV2Pair.sol"
+      ]
+    },
+    {
+      "id": "H-06",
+      "severity": "High",
+      "component": "Launchpad",
+      "title": "Donations to Distributor with arbitrary quoteToken can be used to drain all quote rewards from distributor",
+      "files": [
+        "Distributor.sol"
+      ]
+    },
+    {
+      "id": "H-07",
+      "severity": "High",
+      "component": "Launchpad",
+      "title": "Total reward shares for token can reach zero after unlocking, causing GTELaunchpadV2Pair to be bricked",
+      "files": [
+        "Distributor.sol",
+        "LaunchToken.sol"
+      ]
+    },
+    {
+      "id": "H-08",
+      "severity": "High",
+      "component": "Launchpad",
+      "title": "CREATE2 address of the uniswap pair used by LaunchPad does not match address of pair deployed by GTELaunchpadV2PairFactory",
+      "files": [
+        "GTELaunchpadV2PairFactory.sol",
+        "LaunchPad.sol",
+        "LaunchToken.sol",
+        "Launchpad.sol"
+      ]
+    },
+    {
+      "id": "H-09",
+      "severity": "High",
+      "component": "Launchpad",
+      "title": "DOS of Launchpad Graduation via addLiquidity with 1 Wei donation",
+      "files": [
+        "Launchpad.sol",
+        "Pair.sol"
+      ]
+    },
+    {
+      "id": "H-10",
+      "severity": "High",
+      "component": "Launchpad",
+      "title": "Protocol fails to charge fees from swap amount",
+      "files": [
+        "GTELaunchpadV2Pair.sol"
+      ]
+    },
+    {
+      "id": "M-01",
+      "severity": "Medium",
+      "component": "Perps",
+      "title": "Due to logical error when changing leverage the system also refunds the margin that should be backing the unrealized loss the account holds.",
+      "files": [
+        "CollateralManager.sol",
+        "PerpManager.sol"
+      ]
+    },
+    {
+      "id": "M-02",
+      "severity": "Medium",
+      "component": "Perps",
+      "title": "The protocol doesn’t check whether the orders have expired when the mid and impact price are calculated",
+      "files": [
+        "Market.sol"
+      ]
+    },
+    {
+      "id": "M-03",
+      "severity": "Medium",
+      "component": "Perps",
+      "title": "EMA-based Mark Price Component Exhibits Excessive Lag Leading to Inaccurate Pricing",
+      "files": [
+        "Market.sol",
+        "PriceHistory.sol"
+      ]
+    },
+    {
+      "id": "M-04",
+      "severity": "Medium",
+      "component": "Perps",
+      "title": "Leverage Increase Breaks Margin Removal Invariant",
+      "files": [
+        "PerpManager.sol"
+      ]
+    },
+    {
+      "id": "M-05",
+      "severity": "Medium",
+      "component": "Perps",
+      "title": "Protocol Disable Functionality Bypass Allows Critical Operations During Emergency Shutdown",
+      "files": [
+        "AdminPanel.sol",
+        "PerpManager.sol"
+      ]
+    },
+    {
+      "id": "M-06",
+      "severity": "Medium",
+      "component": "Perps",
+      "title": "Liquidation stalls when top-of-book is outside divergence band (STANDARD & BACKSTOP), allowing under-margined positions to persist",
+      "files": [
+        "CLOBLib.sol"
+      ]
+    },
+    {
+      "id": "M-07",
+      "severity": "Medium",
+      "component": "Perps",
+      "title": "Partial Fills before amendOrder TX exposes Users to unintended Risks",
+      "files": [
+        "OrderLib.sol",
+        "PerpManager.sol"
+      ]
+    },
+    {
+      "id": "M-08",
+      "severity": "Medium",
+      "component": "Perps",
+      "title": "Reduce-only orders can be used to inflate quoteOI and DoS the orderbook",
+      "files": [
+        "Book.sol"
+      ]
+    },
+    {
+      "id": "M-09",
+      "severity": "Medium",
+      "component": "Perps",
+      "title": "GTL contract is vulnerable to an inflation attack",
+      "files": [
+        "GTL.sol"
+      ]
+    },
+    {
+      "id": "M-10",
+      "severity": "Medium",
+      "component": "Perps",
+      "title": "Incorrect Removal Of Asset In UpdateAccount Due To Wrong Implementation in _movePop",
+      "files": [
+        "ClearingHouse.sol"
+      ]
+    },
+    {
+      "id": "M-11",
+      "severity": "Medium",
+      "component": "Perps",
+      "title": "Funding Mis-Accrual Due to Missing Time Normalization in _calcFundingIndex",
+      "files": [
+        "FundingRateEngine.sol"
+      ]
+    },
+    {
+      "id": "M-12",
+      "severity": "Medium",
+      "component": "Perps",
+      "title": "Perps - GTL post-only orders skew totalAssets accounting, minting excessive shares and rendering the GTL vault insolvent",
+      "files": [
+        "ClearingHouse.sol"
+      ]
+    },
+    {
+      "id": "M-13",
+      "severity": "Medium",
+      "component": "Perps",
+      "title": "Max Leverage Reduction Not Enforced for Legacy Positions",
+      "files": [
+        "Market.sol"
+      ]
+    },
+    {
+      "id": "M-14",
+      "severity": "Medium",
+      "component": "Perps",
+      "title": "Margin Balance can be forced to be < 0 even realizing upnl indirectly",
+      "files": [
+        "Position.sol"
+      ]
+    },
+    {
+      "id": "M-15",
+      "severity": "Medium",
+      "component": "Perps",
+      "title": "Loss for protocol by incorrectly assuming the position has been fully closed",
+      "files": [
+        "LiquidatorPanel.sol",
+        "Market.sol"
+      ]
+    },
+    {
+      "id": "M-16",
+      "severity": "Medium",
+      "component": "Launchpad",
+      "title": "Accumulated rewards per share can round to zero",
+      "files": [
+        "RewardsTracker.sol"
+      ]
+    },
+    {
+      "id": "M-17",
+      "severity": "Medium",
+      "component": "Launchpad",
+      "title": "LaunchToken transfers cause staking rewards to be lost to the LaunchPad",
+      "files": [
+        "Distributor.sol"
+      ]
+    },
+    {
+      "id": "M-18",
+      "severity": "Medium",
+      "component": "Launchpad",
+      "title": "Pair pre-creation disables Launchpad rewards hooks leading to no fees accrued or distributed",
+      "files": [
+        "GTELaunchpadV2PairFactory.sol"
+      ]
+    },
+    {
+      "id": "M-19",
+      "severity": "Medium",
+      "component": "Launchpad",
+      "title": "Unsynchronized LaunchpadLPVault address leading to Loss of fee to Stakers of new launchPad token",
+      "files": [
+        "GTELaunchpadV2Pair.sol",
+        "GTELaunchpadV2PairFactory.sol",
+        "Launchpad.sol"
+      ]
+    },
+    {
+      "id": "M-20",
+      "severity": "Medium",
+      "component": "Launchpad",
+      "title": "Price Accumulators Overflow in GTELaunchpadV2Pair contract Causes AMM-wide DoS",
+      "files": [
+        "GTELaunchpadV2Pair.sol"
+      ]
+    },
+    {
+      "id": "M-21",
+      "severity": "Medium",
+      "component": "Launchpad",
+      "title": "Bypass of recipient check allows pre-seeding the real pair and manipulating initial AMM price",
+      "files": [
+        "contracts/launchpad/Launchpad.sol"
+      ]
+    },
+    {
+      "id": "M-22",
+      "severity": "Medium",
+      "component": "Launchpad",
+      "title": "User can prevent anyone from receiving rewards",
+      "files": [
+        "LaunchToken.sol",
+        "Launchpad.sol"
+      ]
+    },
+    {
+      "id": "M-23",
+      "severity": "Medium",
+      "component": "Launchpad",
+      "title": "Rounding down in Quote calculation allows underpriced LaunchToken purchases by Malicious user, compounding protocol loss over multiple buys.",
+      "files": [
+        "Launchpad.sol",
+        "SimpleBondingCurve.sol"
+      ]
+    },
+    {
+      "id": "M-24",
+      "severity": "Medium",
+      "component": "Launchpad",
+      "title": "Launchpad slippage is not enforced properly during token graduation",
+      "files": [
+        "Launchpad.sol"
+      ]
+    },
+    {
+      "id": "M-25",
+      "severity": "Medium",
+      "component": "Launchpad",
+      "title": "Bonding Shares Incorrectly Reduced/unstaked on Transfer in launchToken.",
+      "files": [
+        "Distributor.sol",
+        "GTELaunchpadV2Pair.sol",
+        "LaunchToken.sol",
+        "Launchpad.sol"
+      ]
+    }
+  ]
+}

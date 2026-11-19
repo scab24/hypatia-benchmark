@@ -1,0 +1,585 @@
+{
+  "project": "promis",
+  "repo": "https://github.com/promis-finance/promis-contracts",
+  "audited_commit": "4cd2d43122bf10c173b16d9a017415f35839c003",
+  "audited_commit_date": "2026-07-03",
+  "audited_commit_note": "report section 2.1 'Commit Hash'; it is the local checkout HEAD (merge of PR #2 regiveAsync)",
+  "fixed_commit": "63ca73515f5c9a8f6ef1ea74b9261c534fe53efa",
+  "fixed_commit_date": "2026-07-17",
+  "fixed_commit_note": "report section 2.1 'Final Commit Hash'. It is the tip of branch origin/fix/yaudit; git log 4cd2d43..63ca735 holds only the 22 'yaudit/#N' fix commits, and 63ca735 is the last fix the report cites (L-10). main merged it in 1aee1af together with unrelated commits (4305ced, b2bee4e, 6af9eda), so main is not used.",
+  "report": {
+    "firm": "yAudit",
+    "auditors": [
+      "Panda",
+      "fedebianu"
+    ],
+    "audit_window": "2026-07-06 to 2026-07-17",
+    "report_date": "2026-07-23",
+    "report_date_basis": "file name yAudit_230726.pdf and audits/README.md ('2026-07-23') in the project repository (commit 9d3f2a7, 2026-08-25); the report cover says 'July 2026' and its last page 'Completed 2026-07-17'",
+    "pdf_source": "git show 9d3f2a7:audits/yAudit_230726.pdf in targets/promis (no download)",
+    "totals": {
+      "critical": 0,
+      "high": 5,
+      "medium": 5,
+      "low": 14,
+      "gas": 1,
+      "informational": 9
+    },
+    "totals_note": "Figure 1 of the report counts 0/5/5/14/9 (Gas not counted); the findings sections hold 1 Gas finding. The 'Overall Assessment' paragraph gives different numbers (four high, one medium, five low, eight informational, two gas) and says responses are pending; it does not match the findings sections and is ignored."
+  },
+  "scope": {
+    "basis": "report section 1.2 'Audit Scope' (11 implementation contracts and 8 state files, 'approximately 3,921 lines of code')",
+    "files": [
+      "contracts/core/ProToken.sol",
+      "contracts/core/ProTokenOperations.sol",
+      "contracts/core/ProTokenSettings.sol",
+      "contracts/core/ProTokenUnmintHandler.sol",
+      "contracts/core/YAssetOperationsHandler.sol",
+      "contracts/core/state/ProTokenOperationsState.sol",
+      "contracts/core/state/ProTokenSettingsState.sol",
+      "contracts/core/state/ProTokenUnmintHandlerState.sol",
+      "contracts/core/state/YAssetOperationsHandlerState.sol",
+      "contracts/oracles/OracleChainlinkPushAdaptor.sol",
+      "contracts/vaults/ProTokenPlus/ProTokenPlus.sol",
+      "contracts/vaults/ProTokenPlus/ProTokenPlusOperations.sol",
+      "contracts/vaults/ProTokenPlus/StrategyVault.sol",
+      "contracts/vaults/ProTokenPlus/state/ProTokenPlusState.sol",
+      "contracts/vaults/ProTokenPlus/state/StrategyVaultState.sol",
+      "contracts/yields/AaveV3YieldHandler.sol",
+      "contracts/yields/MorphoYieldHandler.sol",
+      "contracts/yields/state/AaveV3YieldHandlerState.sol",
+      "contracts/yields/state/MorphoYieldHandlerState.sol"
+    ]
+  },
+  "size": {
+    "files_in_scope": 19,
+    "lines_no_comments_no_blanks": 3921,
+    "count_command": "for each file: git show 4cd2d43:<file>, remove /* */ and // comments, count non-blank lines (scratch script, Python); equals the report's 3,921"
+  },
+  "baseline": {
+    "toolchain": "solc 0.8.29, optimizer on, 1000 runs (hardhat.config.ts); Hardhat 2.26.5; OpenZeppelin contracts and contracts-upgradeable 5.4.0, morpho-blue 1.0.0 (node_modules). Foundry run: forge 1.9.0, evm cancun (Hardhat's default for 0.8.29)",
+    "tests_at_audited_commit": "Hardhat TypeScript tests only (23 files under test/): 756 pass, 1 pending, 0 fail, run offline with the local ~/.svm solc 0.8.29 binary; no Foundry tests",
+    "offline_note": "npx hardhat test cannot run inside a session as shipped: Hardhat's compiler cache has no 0.8.29 and the download fails without network (error HH501)"
+  },
+  "notes": [
+    "Ids are assigned here in report order: H-01..H-05 = 2.5.1..2.5.5, M-01..M-05 = 2.6.1..2.6.5, L-01..L-14 = 2.7.x, G-01 = 2.8.1, I-01..I-09 = 2.9.x; report_section keeps the report's number.",
+    "files: the report names contracts (e.g. 'ProTokenOperations._aggregateOraclePrices()'), not file paths. Each contract name in a finding's text before 'Developer Response' was mapped to the file of the same name at the audited commit; interfaces and type files appear when the text names them. M-01, L-12 and I-06 name only functions: their file was located by the function definition (files_basis).",
+    "M-04 (OracleAlgebraAdaptor) concerns a file outside the report's listed 19-file scope. M-05 lies across the boundary: the call site is in ProTokenOperations.sol (in scope), the failing adaptors OraclePromisPullAdaptor.sol and OracleRedStoneAdaptor.sol are not. Both were fixed by deleting those adaptors (f1e4faa). With the 19-file scope given to the arms, M-04 cannot be expected and M-05 is only partly reachable.",
+    "L-11 and L-12 have no 'Fixed in commit' sentence; the developer response lists one commit (0a07fe0, a9334ea) and a change description, so they are recorded as fixed.",
+    "L-10 cites two commits (0a07fe0 and 63ca735); fix_commit is the later one. Several commits fix more than one finding: d360232 (H-04, L-08), 0a07fe0 (L-09, L-10 part, L-11), f1e4faa (M-04, M-05, I-09).",
+    "M-02, L-03, L-04, L-05, L-06, L-14, I-01 and I-03 are acknowledged, not fixed: they cannot be judged by a vulnerable/fixed difference.",
+    "A Sherlock contest report (audits/Sherlock_010826.pdf, 2026-08-01) covers the same code after these fixes; it is not used here.",
+    "The field `judgeable` is not filled in yet."
+  ],
+  "findings": [
+    {
+      "id": "H-01",
+      "report_section": "2.5.1",
+      "severity": "High",
+      "title": "Missing oracle price floor lets capped deposits overmint proUSD",
+      "files": [
+        "contracts/core/ProToken.sol",
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/core/ProTokenSettings.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "f9d1a56",
+      "fix_commit": "f9d1a568ec893366804bf1100b7ec4e342b545bb"
+    },
+    {
+      "id": "H-02",
+      "report_section": "2.5.2",
+      "severity": "High",
+      "title": "Capped yAsset redemptions can overpay when the live price exceeds usdCap",
+      "files": [
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/core/ProTokenUnmintHandler.sol",
+        "contracts/core/YAssetOperationsHandler.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "93f8bfa",
+      "fix_commit": "93f8bfa01174b3d014e780258d3747c87757fb1c"
+    },
+    {
+      "id": "H-03",
+      "report_section": "2.5.3",
+      "severity": "High",
+      "title": "proUSD price decreases can break StrategyVault withdrawal accounting",
+      "files": [
+        "contracts/core/ProToken.sol",
+        "contracts/vaults/ProTokenPlus/ProTokenPlusOperations.sol",
+        "contracts/vaults/ProTokenPlus/StrategyVault.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "bdb17ad",
+      "fix_commit": "bdb17ad68eaa2d0862bb69f3a88448687b989b88"
+    },
+    {
+      "id": "H-04",
+      "report_section": "2.5.4",
+      "severity": "High",
+      "title": "1:1 unmint cap under-redeems proUSD when proUSD price is above 1 USD",
+      "files": [
+        "contracts/core/ProTokenOperations.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "d360232",
+      "fix_commit": "d360232b3f5884e1af47f7c40bf2051cdfc1e925"
+    },
+    {
+      "id": "H-05",
+      "report_section": "2.5.5",
+      "severity": "High",
+      "title": "StrategyVault.claimYield() leaves withdrawProUSD overstated, breaking vault solvency",
+      "files": [
+        "contracts/vaults/ProTokenPlus/StrategyVault.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "1953f96",
+      "fix_commit": "1953f962042556ed31af9be69fc6798843836d55"
+    },
+    {
+      "id": "M-01",
+      "report_section": "2.6.1",
+      "severity": "Medium",
+      "title": "Median-relative validation permits oracle spreads above the configured maximum",
+      "files": [
+        "contracts/core/ProTokenOperations.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "c5f6fae",
+      "fix_commit": "c5f6fae727a1877d4a11650d13f471cfa9cf1407",
+      "files_basis": "the report names functions, not contracts; file located by grep for the function definition at the audited commit"
+    },
+    {
+      "id": "M-02",
+      "report_section": "2.6.2",
+      "severity": "Medium",
+      "title": "Queued unmint burns proUSD before the yAsset payout is guaranteed",
+      "files": [
+        "contracts/core/ProTokenUnmintHandler.sol",
+        "contracts/core/interfaces/IProToken.sol",
+        "contracts/core/interfaces/IProTokenUnmintHandler.sol"
+      ],
+      "in_report_scope": true,
+      "status": "acknowledged",
+      "report_fix": null,
+      "fix_commit": null
+    },
+    {
+      "id": "M-03",
+      "report_section": "2.6.3",
+      "severity": "Medium",
+      "title": "StrategyVault.regive() and StrategyVault.rotate() can underfund withdrawals",
+      "files": [
+        "contracts/vaults/ProTokenPlus/StrategyVault.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "bd447c9",
+      "fix_commit": "bd447c9b3d9b15f3aac7b3344cc7423abb6279af"
+    },
+    {
+      "id": "M-04",
+      "report_section": "2.6.4",
+      "severity": "Medium",
+      "title": "Algebra TWAP adaptor misdetects staleness via tick-cumulative equality",
+      "files": [
+        "contracts/oracles/OracleAlgebraAdaptor.sol"
+      ],
+      "in_report_scope": false,
+      "status": "fixed",
+      "report_fix": "f1e4faa",
+      "fix_commit": "f1e4faad33eea3afa5dfb2e873b9708dfc98197f"
+    },
+    {
+      "id": "M-05",
+      "report_section": "2.6.5",
+      "severity": "Medium",
+      "title": "Pull oracle adapters are unusable",
+      "files": [
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/oracles/OraclePromisPullAdaptor.sol",
+        "contracts/oracles/OracleRedStoneAdaptor.sol",
+        "contracts/oracles/interfaces/IOracleAdaptor.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "f1e4faa",
+      "fix_commit": "f1e4faad33eea3afa5dfb2e873b9708dfc98197f"
+    },
+    {
+      "id": "L-01",
+      "report_section": "2.7.1",
+      "severity": "Low",
+      "title": "Duplicate yield handlers double-count liquidity and can block redemptions",
+      "files": [
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/core/YAssetOperationsHandler.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "05c72e1",
+      "fix_commit": "05c72e1bef3c3948c091e93bb51badfb90fde582"
+    },
+    {
+      "id": "L-02",
+      "report_section": "2.7.2",
+      "severity": "Low",
+      "title": "The unmint fee is unbounded",
+      "files": [
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/core/ProTokenSettings.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "bb00e84",
+      "fix_commit": "bb00e84a753e0955a56fd25d35e923dd373c9511"
+    },
+    {
+      "id": "L-03",
+      "report_section": "2.7.3",
+      "severity": "Low",
+      "title": "The module pause controls are disconnected from each other and StrategyVault has no pause mechanism of its own",
+      "files": [
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/core/ProTokenSettings.sol",
+        "contracts/vaults/ProTokenPlus/ProTokenPlus.sol",
+        "contracts/vaults/ProTokenPlus/StrategyVault.sol"
+      ],
+      "in_report_scope": true,
+      "status": "acknowledged",
+      "report_fix": null,
+      "fix_commit": null
+    },
+    {
+      "id": "L-04",
+      "report_section": "2.7.4",
+      "severity": "Low",
+      "title": "Rotating StrategyVault in settings can freeze existing ProTokenPlus withdrawals",
+      "files": [
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/core/ProTokenSettings.sol",
+        "contracts/core/interfaces/IProTokenSettings.sol",
+        "contracts/vaults/ProTokenPlus/ProTokenPlus.sol",
+        "contracts/vaults/ProTokenPlus/ProTokenPlusOperations.sol",
+        "contracts/vaults/ProTokenPlus/StrategyVault.sol"
+      ],
+      "in_report_scope": true,
+      "status": "acknowledged",
+      "report_fix": null,
+      "fix_commit": null
+    },
+    {
+      "id": "L-05",
+      "report_section": "2.7.5",
+      "severity": "Low",
+      "title": "Admin proUSD address rotation desynchronizes StrategyVault from proUSD+ flows",
+      "files": [
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/core/ProTokenSettings.sol",
+        "contracts/vaults/ProTokenPlus/ProTokenPlus.sol",
+        "contracts/vaults/ProTokenPlus/ProTokenPlusOperations.sol",
+        "contracts/vaults/ProTokenPlus/StrategyVault.sol"
+      ],
+      "in_report_scope": true,
+      "status": "acknowledged",
+      "report_fix": null,
+      "fix_commit": null
+    },
+    {
+      "id": "L-06",
+      "report_section": "2.7.6",
+      "severity": "Low",
+      "title": "Pending mint escrows can be stranded by operations rotation or yAsset removal",
+      "files": [
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/core/ProTokenSettings.sol"
+      ],
+      "in_report_scope": true,
+      "status": "acknowledged",
+      "report_fix": null,
+      "fix_commit": null
+    },
+    {
+      "id": "L-07",
+      "report_section": "2.7.7",
+      "severity": "Low",
+      "title": "Missing handler-asset validation lets a miswired yAsset route fail open",
+      "files": [
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/core/ProTokenSettings.sol",
+        "contracts/core/YAssetOperationsHandler.sol",
+        "contracts/core/interfaces/IYAssetOperationsHandler.sol",
+        "contracts/core/types/ProTokenSettingsTypes.sol",
+        "contracts/yields/interfaces/IYieldProtocolHandler.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "8b9e747",
+      "fix_commit": "8b9e747d2f362ec989a5cadf5285e67d445b51a3"
+    },
+    {
+      "id": "L-08",
+      "report_section": "2.7.8",
+      "severity": "Low",
+      "title": "Supported usdCap = 0 strategist round trips can underfund the proUSD+ withdrawal reserve",
+      "files": [
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/vaults/ProTokenPlus/ProTokenPlus.sol",
+        "contracts/vaults/ProTokenPlus/ProTokenPlusOperations.sol",
+        "contracts/vaults/ProTokenPlus/StrategyVault.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "d360232",
+      "fix_commit": "d360232b3f5884e1af47f7c40bf2051cdfc1e925"
+    },
+    {
+      "id": "L-09",
+      "report_section": "2.7.9",
+      "severity": "Low",
+      "title": "Ordered fail-hard withdrawals can strand later healthy liquidity",
+      "files": [
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/core/YAssetOperationsHandler.sol",
+        "contracts/yields/AaveV3YieldHandler.sol",
+        "contracts/yields/MorphoYieldHandler.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "0a07fe0",
+      "fix_commit": "0a07fe0836cc7b53575936a27d99770d25e634ec"
+    },
+    {
+      "id": "L-10",
+      "report_section": "2.7.10",
+      "severity": "Low",
+      "title": "Queued unmint claims can be leapfrogged by later instant redeemers",
+      "files": [
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/core/ProTokenUnmintHandler.sol",
+        "contracts/core/YAssetOperationsHandler.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "0a07fe0 and 63ca735",
+      "fix_commit": "63ca73515f5c9a8f6ef1ea74b9261c534fe53efa"
+    },
+    {
+      "id": "L-11",
+      "report_section": "2.7.11",
+      "severity": "Low",
+      "title": "ProTokenPlus ignores the configured proUSD price source and can freeze under supported oracle-mode pricing",
+      "files": [
+        "contracts/core/ProToken.sol",
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/core/ProTokenSettings.sol",
+        "contracts/core/interfaces/IProToken.sol",
+        "contracts/vaults/ProTokenPlus/ProTokenPlus.sol",
+        "contracts/vaults/ProTokenPlus/ProTokenPlusOperations.sol",
+        "contracts/vaults/ProTokenPlus/StrategyVault.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "0a07fe0",
+      "fix_commit": "0a07fe0836cc7b53575936a27d99770d25e634ec"
+    },
+    {
+      "id": "L-12",
+      "report_section": "2.7.12",
+      "severity": "Low",
+      "title": "Deposit requests can deadlock escrowed proUSD on invalid or stale pre-merge inputs",
+      "files": [
+        "contracts/vaults/ProTokenPlus/ProTokenPlusOperations.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "a9334ea",
+      "fix_commit": "a9334ea23025abb3f7bbeab4c5fad5bd8e52e1ec",
+      "files_basis": "the report names functions, not contracts; file located by grep for the function definition at the audited commit"
+    },
+    {
+      "id": "L-13",
+      "report_section": "2.7.13",
+      "severity": "Low",
+      "title": "Optimistic liquidity preview can block approved unmints",
+      "files": [
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/core/ProTokenUnmintHandler.sol",
+        "contracts/core/YAssetOperationsHandler.sol",
+        "contracts/core/interfaces/IProTokenUnmintHandler.sol",
+        "contracts/yields/AaveV3YieldHandler.sol",
+        "contracts/yields/MorphoYieldHandler.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "1246649",
+      "fix_commit": "1246649650efc64bd96aabd0aef5e4b6eff3e657"
+    },
+    {
+      "id": "L-14",
+      "report_section": "2.7.14",
+      "severity": "Low",
+      "title": "Pending old-proToken unmint requests become unfinalizable after proToken changes",
+      "files": [
+        "contracts/core/ProTokenOperations.sol",
+        "contracts/core/ProTokenSettings.sol",
+        "contracts/core/interfaces/IProToken.sol",
+        "contracts/core/interfaces/IProTokenSettings.sol",
+        "contracts/core/types/ProTokenOperationsTypes.sol",
+        "contracts/core/types/ProTokenSettingsTypes.sol"
+      ],
+      "in_report_scope": true,
+      "status": "acknowledged",
+      "report_fix": null,
+      "fix_commit": null
+    },
+    {
+      "id": "G-01",
+      "report_section": "2.8.1",
+      "severity": "Gas",
+      "title": "Unnecessary timestampSeconds variable can be removed",
+      "files": [
+        "contracts/oracles/OracleChainlinkPushAdaptor.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "53e28b0",
+      "fix_commit": "53e28b0a9f2755ea11af58c0c94e1e0f7aebf151"
+    },
+    {
+      "id": "I-01",
+      "report_section": "2.9.1",
+      "severity": "Informational",
+      "title": "Privileged roles can withdraw yAsset backing directly to themselves",
+      "files": [
+        "contracts/core/YAssetOperationsHandler.sol",
+        "contracts/core/interfaces/IProTokenSettings.sol"
+      ],
+      "in_report_scope": true,
+      "status": "acknowledged",
+      "report_fix": null,
+      "fix_commit": null
+    },
+    {
+      "id": "I-02",
+      "report_section": "2.9.2",
+      "severity": "Informational",
+      "title": "New unmint requests can join a batch that is already processable",
+      "files": [
+        "contracts/core/ProTokenUnmintHandler.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "3e62f7c",
+      "fix_commit": "3e62f7c6efc6fc040ab5a88d7380afbbe161a060"
+    },
+    {
+      "id": "I-03",
+      "report_section": "2.9.3",
+      "severity": "Informational",
+      "title": "Admin access-control pattern is duplicated across contracts",
+      "files": [
+        "contracts/core/ProTokenSettings.sol",
+        "contracts/core/interfaces/IProTokenSettings.sol"
+      ],
+      "in_report_scope": true,
+      "status": "acknowledged",
+      "report_fix": null,
+      "fix_commit": null
+    },
+    {
+      "id": "I-04",
+      "report_section": "2.9.4",
+      "severity": "Informational",
+      "title": "MorphoYieldHandler.withdrawYieldAsset(0) validates withdrawal against the original zero",
+      "files": [
+        "contracts/yields/MorphoYieldHandler.sol",
+        "contracts/yields/interfaces/IYieldProtocolHandler.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "32721c1",
+      "fix_commit": "32721c14c1e8808ad801d2f5f53e808c22f9b2b0"
+    },
+    {
+      "id": "I-05",
+      "report_section": "2.9.5",
+      "severity": "Informational",
+      "title": "setAToken() can desynchronize accounting while Aave funds are deposited",
+      "files": [
+        "contracts/yields/AaveV3YieldHandler.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "a298ba5",
+      "fix_commit": "a298ba55870fa4ea3f81ff3d81e003ecbd1be12c"
+    },
+    {
+      "id": "I-06",
+      "report_section": "2.9.6",
+      "severity": "Informational",
+      "title": "Initializer rejects zero _aToken even though the handler supports pool-based aToken lookup",
+      "files": [
+        "contracts/yields/AaveV3YieldHandler.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "24a1a8a",
+      "fix_commit": "24a1a8a609e13dd71d4404d588e747872c9c64ad",
+      "files_basis": "the report names functions, not contracts; file located by grep for the function definition at the audited commit"
+    },
+    {
+      "id": "I-07",
+      "report_section": "2.9.7",
+      "severity": "Informational",
+      "title": "IStrategyVault.claimYield() NatSpec mismatch",
+      "files": [
+        "contracts/vaults/ProTokenPlus/StrategyVault.sol",
+        "contracts/vaults/ProTokenPlus/interfaces/IStrategyVault.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "0d9867a",
+      "fix_commit": "0d9867a0b05e9dffdad40d216bbd04877b0443e7"
+    },
+    {
+      "id": "I-08",
+      "report_section": "2.9.8",
+      "severity": "Informational",
+      "title": "Global staleness threshold may be too loose for some Chainlink feeds",
+      "files": [
+        "contracts/oracles/OracleChainlinkPushAdaptor.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "63a65fd",
+      "fix_commit": "63a65fd74256161ce763b3a6cff1ec50fc4af245"
+    },
+    {
+      "id": "I-09",
+      "report_section": "2.9.9",
+      "severity": "Informational",
+      "title": "Unused oracle payload parameter can be removed",
+      "files": [
+        "contracts/oracles/OracleAlgebraAdaptor.sol",
+        "contracts/oracles/OracleChainlinkPushAdaptor.sol",
+        "contracts/oracles/OraclePromisPullAdaptor.sol",
+        "contracts/oracles/OracleRedStoneAdaptor.sol",
+        "contracts/oracles/OracleRedStonePushAdaptor.sol",
+        "contracts/oracles/interfaces/IOracleAdaptor.sol"
+      ],
+      "in_report_scope": true,
+      "status": "fixed",
+      "report_fix": "f1e4faa",
+      "fix_commit": "f1e4faad33eea3afa5dfb2e873b9708dfc98197f"
+    }
+  ]
+}
